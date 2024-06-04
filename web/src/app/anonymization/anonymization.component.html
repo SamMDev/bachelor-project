@@ -1,0 +1,190 @@
+
+<form *ngIf="formGroup" [formGroup]="formGroup">
+
+  <div class="action-buttons">
+    <button
+      mat-button
+      color="primary"
+      (click)="search()"
+      [disabled]="!formGroup.get('dataSourceId').value || (loading$ | async)"
+      matTooltip="Expanduj strom">
+      Vyhľadaj
+      <mat-icon>search</mat-icon>
+    </button>
+  </div>
+
+  <mat-list class="form-section-divider">
+    <mat-list-item>{{ 'Vyhľadávanie fyzickej osoby' }}</mat-list-item>
+  </mat-list>
+
+  <div class="form-field-full">
+    <ng-select [items]="dataSources"
+               [multiple]="false"
+               [clearable]="true"
+               bindValue="id"
+               placeholder="Vyberte zdroj"
+               formControlName="dataSourceId">
+
+      <ng-template ng-label-tmp let-item="item">
+        {{ item.label + ' (tabuľka [' + item.schemaName + '].[' +  item.tableName +'])' }}
+      </ng-template>
+      <ng-template ng-option-tmp let-item="item" let-search="searchTerm" let-index="index">
+        {{ item.label + ' (tabuľka [' + item.schemaName + '].[' +  item.tableName +'])' }}
+      </ng-template>
+
+      <ng-template ng-typetosearch-tmp>
+        <div class="ng-option disabled">{{'začni písať'}}</div>
+      </ng-template>
+      <ng-template ng-notfound-tmp>
+        <div class="ng-option disabled">{{'nenájdené dáta'}}</div>
+      </ng-template>
+      <ng-template ng-loadingtext-tmp>
+        <div class="ng-option disabled">{{'načítavam'}}</div>
+      </ng-template>
+    </ng-select>
+  </div>
+
+
+  @if (formGroup.get('dataSourceId').value) {
+
+    @if (dataSourceDataTypes == null) {
+      <mat-spinner diameter="50" class="spinner-overlay"></mat-spinner>
+    } @else {
+
+      <ng-container *ngFor="let dataTypeFg of dataTypesFormArray.controls, let i = index" [formGroup]="toFg(dataTypeFg)">
+
+        @switch (dataTypeFg.get('columnType').value) {
+          @case (ColumnType.TEXT) {
+            <mat-form-field class="form-field-full">
+              <mat-label>{{dataTypeFg.get('name').value}}</mat-label>
+              <input matInput formControlName="value">
+            </mat-form-field>
+          }
+          @case (ColumnType.NUMBER) {
+            <mat-form-field class="form-field-full">
+              <mat-label>{{dataTypeFg.get('name').value}}</mat-label>
+              <input matInput type="number" formControlName="value">
+            </mat-form-field>
+          }
+          @case (ColumnType.DATE) {
+            <mat-form-field class="form-field-full">
+              <mat-label>{{dataTypeFg.get('name').value}}</mat-label>
+              <input matInput formControlName="value" [matDatepicker]="picker">
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          }
+          @case (ColumnType.BOOLEAN) {
+            <div class="form-field-full">
+              <mat-checkbox formControlName="value">
+                <mat-label>{{dataTypeFg.get('name').value}}</mat-label>
+              </mat-checkbox>
+            </div>
+          }
+          @default {
+            <mat-form-field class="form-field-full">
+              <mat-label>{{dataTypeFg.get('name').value}}</mat-label>
+              <input matInput formControlName="value">
+            </mat-form-field>
+          }
+        }
+      </ng-container>
+    }
+  }
+</form>
+
+@if (formGroup.get('dataSourceId').value) {
+  <mat-list class="form-section-divider">
+    <mat-list-item>Výsledok vyhľadávania</mat-list-item>
+
+    @if (searchTree || (loading$ | async)) {
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="treeControl?.expandAll()"
+        [disabled]="loading$ | async"
+        matTooltip="Expanduj strom">
+        <mat-icon>expand_more</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="treeControl?.collapseAll()"
+        [disabled]="loading$ | async"
+        matTooltip="Zatvor strom">
+        <mat-icon>expand_less</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="selectNodes(true)"
+        [disabled]="loading$ | async"
+        matTooltip="Vybrať všetko">
+        <mat-icon>select_all</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="selectNodes(false)"
+        [disabled]="loading$ | async"
+        matTooltip="Zruš výber">
+        <mat-icon>tab_unselected</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="anonymize()"
+        [disabled]="loading$ | async"
+        matTooltip="Anonymizuj">
+        <mat-icon>delete_sweep</mat-icon>
+      </button>
+    }
+  </mat-list>
+
+  @if (searchTree || (loading$ | async)) {
+    @if (loading$ | async) {
+      <mat-spinner diameter="50" class="spinner-overlay"></mat-spinner>
+    } @else {
+      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+        <mat-tree-node *matTreeNodeDef="let node;" matTreeNodePadding>
+          <!-- expand node button -->
+          <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name" [disabled]="!(node.searchNode.children?.length > 0)">
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+          </button>
+
+          <!-- node containing data -->
+          <ng-container *ngIf="node.searchNode.isDataNode">
+            <!-- can't select node -->
+            <ng-container *ngIf="node.isCheckboxDisabled">
+              <div matTooltip="Nie je možné anonymizovať záznam, ktorý neobsahuje osobné údaje" matTooltipShowDelay="100">
+                <mat-checkbox
+                  [ngModel]="false"
+                  [disabled]="true">
+                </mat-checkbox>
+              </div>
+              {{node.name}}
+            </ng-container>
+
+            <!-- can select node -->
+            <ng-container *ngIf="!node.isCheckboxDisabled">
+              <label>
+                <mat-checkbox [(ngModel)]="node.searchNode.isSelected">
+                </mat-checkbox>
+                {{node.name}}
+              </label>
+            </ng-container>
+          </ng-container>
+
+          <!-- node only for structure -->
+          <ng-container *ngIf="!node.searchNode.isDataNode">
+            {{node.name}}
+          </ng-container>
+
+        </mat-tree-node>
+      </mat-tree>
+    }
+  }
+
+}

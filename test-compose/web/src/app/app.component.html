@@ -1,0 +1,67 @@
+
+
+<mat-sidenav-container>
+  <mat-sidenav #sidenav mode="over">
+
+    <div class="sidebar-header">
+      <img src="assets/incognito.png" alt="Icon">
+      GDPR Modul
+    </div>
+
+    <mat-card (click)="onTabSelected('Typy osobných údajov')">
+      <a routerLink="/gdpr-data" routerLinkActive="active-card">
+        <mat-card-content>
+          Typy osobných údajov
+        </mat-card-content>
+      </a>
+    </mat-card>
+
+    <mat-card (click)="onTabSelected('Zdroje fyzických osôb')">
+      <a routerLink="/relations" routerLinkActive="active-card">
+        <mat-card-content>
+          Zdroje fyzických osôb
+        </mat-card-content>
+      </a>
+    </mat-card>
+
+    <mat-card (click)="onTabSelected('Anonymizácia fyzickej osoby')">
+      <a routerLink="/anonymization" routerLinkActive="active-card">
+        <mat-card-content>
+          Anonymizácia fyzickej osoby
+        </mat-card-content>
+      </a>
+    </mat-card>
+
+    <mat-card (click)="onTabSelected('Plošná anonymizácia')">
+      <a routerLink="/anonymization-all" routerLinkActive="active-card">
+        <mat-card-content>
+          Plošná anonymizácia
+        </mat-card-content>
+      </a>
+    </mat-card>
+
+    <mat-card (click)="onTabSelected('Audit')">
+      <a routerLink="/audit" routerLinkActive="active-card">
+        <mat-card-content>
+          Audit
+        </mat-card-content>
+      </a>
+    </mat-card>
+
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar>
+      <mat-toolbar-row>
+        <div>
+          <button mat-icon-button (click)="sidenav.toggle()">
+            <mat-icon>menu</mat-icon>
+          </button>
+        </div>
+        {{currentTabLabel}}
+      </mat-toolbar-row>
+    </mat-toolbar>
+
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

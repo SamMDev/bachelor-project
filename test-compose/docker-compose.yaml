@@ -1,0 +1,43 @@
+version: "3.1"
+
+services:
+  postgres-server:
+    container_name: db
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=helloworld
+      - POSTGRES_USER=root
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./sql-scripts/postgres:/docker-entrypoint-initdb.d
+
+  spring-boot:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-server
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/root
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=helloworld
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+
+  angular-app:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - spring-boot
+    links:
+      - spring-boot
+
+volumes:
+  postgres-data: {}

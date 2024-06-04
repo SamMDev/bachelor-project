@@ -1,0 +1,100 @@
+
+
+@if (formGroup) {
+
+  <div class="form-header">
+    <h3>{{'Prepojenie číslo ' + (index + 1)}}</h3>
+    <button *ngIf="deletable" mat-icon-button color="primary" (click)="deleteClicked.emit(index)">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+
+  <div [formGroup]="formGroup" class="form-container">
+    <!-- child -->
+    <div>
+      <label for="node_column">Stĺpec</label>
+      <ng-select [items]="nodeColumns"
+                 [multiple]="false"
+                 [clearable]="true"
+                 id="node_column"
+                 placeholder="Vyber stĺpec"
+                 formControlName="childColumn">
+        <ng-template ng-typetosearch-tmp>
+          <div class="ng-option disabled">{{'začni písať'}}</div>
+        </ng-template>
+        <ng-template ng-notfound-tmp>
+          <div class="ng-option disabled">{{'nenájdené dáta'}}</div>
+        </ng-template>
+        <ng-template ng-loadingtext-tmp>
+          <div class="ng-option disabled">{{'načítavam'}}</div>
+        </ng-template>
+      </ng-select>
+    </div>
+
+    <!-- operator -->
+    <div>
+      <label for="operator">Operátor</label>
+      <ng-select [items]="operators"
+                 [multiple]="false"
+                 [clearable]="true"
+                 placeholder="Operátor"
+                 id="operator"
+                 formControlName="operator">
+        <ng-template ng-label-tmp let-item="item">
+          {{ getOperatorLabel(item) }}
+        </ng-template>
+        <ng-template ng-option-tmp let-item="item" let-search="searchTerm" let-index="index">
+          {{ getOperatorLabel(item) }}
+        </ng-template>
+
+        <ng-template ng-typetosearch-tmp>
+          <div class="ng-option disabled">{{'začni písať'}}</div>
+        </ng-template>
+        <ng-template ng-notfound-tmp>
+          <div class="ng-option disabled">{{'nenájdené dáta'}}</div>
+        </ng-template>
+        <ng-template ng-loadingtext-tmp>
+          <div class="ng-option disabled">{{'načítavam'}}</div>
+        </ng-template>
+      </ng-select>
+    </div>
+
+    <!-- parent or constant-->
+    <div>
+      @if (formGroup.get('isConstant').value) {
+
+        <label for="constant">Porovnávanie s konštantou</label>
+        <mat-form-field id="constant" class="form-field-full">
+          <mat-label>Hodnota</mat-label>
+          <input matInput formControlName="constant">
+        </mat-form-field>
+
+      } @else {
+
+        <label for="parent_column">Porovnávanie s stĺpcom otcovskej tabuľky</label>
+        <ng-select [items]="parentNodeColumns"
+                   [multiple]="false"
+                   [clearable]="true"
+                   id="parent_column"
+                   placeholder="Vyber stĺpec otcovskej tabuľky {{'[' + parentSchema + '].[' + parentTable + ']'}}"
+                   formControlName="parentColumn">
+          <ng-template ng-typetosearch-tmp>
+            <div class="ng-option disabled">{{'začni písať'}}</div>
+          </ng-template>
+          <ng-template ng-notfound-tmp>
+            <div class="ng-option disabled">{{'nenájdené dáta'}}</div>
+          </ng-template>
+          <ng-template ng-loadingtext-tmp>
+            <div class="ng-option disabled">{{'načítavam'}}</div>
+          </ng-template>
+        </ng-select>
+
+      }
+
+      <mat-button-toggle-group formControlName="isConstant">
+        <mat-button-toggle [value]="false">Stĺpec rodiča</mat-button-toggle>
+        <mat-button-toggle [value]="true">Konštanta</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </div>
+}

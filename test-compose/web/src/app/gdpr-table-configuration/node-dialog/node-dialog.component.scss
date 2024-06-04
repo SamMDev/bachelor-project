@@ -1,0 +1,74 @@
+.tables-ng-select {
+
+  display: flex;
+  flex-wrap: wrap; /* Allows items to wrap onto the next line on smaller screens */
+  gap: 16px; /* Optional: Adds some space between the two selects */
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .table-select {
+    flex: 1 1 calc(50% - 8px); /* Flex-grow, flex-shrink, and flex-basis. Subtract gap/2 from 50% to account for the gap */
+    max-width: calc(50% - 8px); /* Maximum width, accounting for the gap */
+  }
+
+  @media (max-width: 768px) { /* Adjust this value based on your needs */
+    .table-select {
+      flex-basis: 100%; /* Each child takes full width on smaller screens */
+      max-width: 100%; /* Reset the max-width for smaller screens */
+    }
+  }
+
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+.joins-header {
+  display: flex;
+  align-items: center; /* Align items vertically */
+  justify-content: space-between; /* Separate content between left and right */
+  flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between button and select */
+
+    .select-operator {
+      width: 120px; /* Adjust based on your preference */
+      flex-shrink: 0; /* Prevent select from shrinking */
+    }
+  }
+}
+
+
+.gdpr-data-section {
+  padding: 10px; /* Reduced padding */
+  margin-bottom: 10px; /* Smaller margin */
+
+  h2 {
+    color: #595959; /* Softer color */
+    margin-bottom: 8px; /* Reduced space */
+    font-size: 14px; /* Smaller heading */
+  }
+
+  p {
+    color: #707070; /* Less contrast */
+    font-size: 14px; /* Smaller text for compactness */
+    margin-left: 15px; /* Reduced indentation */
+    margin-bottom: 5px; /* Less spacing between paragraphs */
+  }
+}
+
+.no-gdpr-data-section {
+  p {
+    color: #a0a0a0; /* Even lighter grey */
+    font-style: italic; /* Maintained for differentiation */
+    font-size: 14px; /* Uniform text size */
+    margin-bottom: 5px; /* Consistent paragraph spacing */
+  }
+}

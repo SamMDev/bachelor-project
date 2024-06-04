@@ -1,0 +1,7 @@
+node_modules
+.idea
+.DS_Store
+.vscode
+generate_data.py
+pripomienky-bc.txt
+mssql-generate.sql

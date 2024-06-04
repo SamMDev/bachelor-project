@@ -1,0 +1,43 @@
+
+mat-drawer-container {
+  height: 100%;
+}
+
+mat-drawer {
+  width: 40%;
+}
+@media (max-width: 768px) {
+  mat-drawer {
+    width: 80%;
+  }
+}
+
+.sidebar-actions {
+  display: flex;
+  justify-content: flex-end;
+  border-bottom: 1px solid #d5d5d5;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.sidebar-actions-edit {
+  background-color: #e0e0e0;
+  border-bottom: none;
+}
+
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 10px;
+  align-items: center;
+}
+
+.spinner-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999999;
+}

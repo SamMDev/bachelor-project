@@ -1,0 +1,10 @@
+<h1 mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle>{{data.header}}</h1>
+
+<mat-dialog-content>
+  <p>{{ data.content }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancelClick()">{{data.cancelLabel ?? 'Zrušit'}}</button>
+  <button mat-button cdkFocusInitial (click)="onConfirmClick()">{{data.confirmationLabel ?? 'Potvrdiť'}}</button>
+</mat-dialog-actions>

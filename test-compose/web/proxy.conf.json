@@ -1,0 +1,27 @@
+{
+  "/db-metadata-api": {
+    "target": "http://spring-boot:8080",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/gdpr-data-api": {
+    "target": "http://spring-boot:8080",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/gdpr-relations-api": {
+    "target": "http://spring-boot:8080",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/gdpr-anonymization-api": {
+    "target": "http://spring-boot:8080",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/gdpr-audit-api": {
+    "target": "http://spring-boot:8080",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

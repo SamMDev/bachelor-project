@@ -1,0 +1,181 @@
+<h1 mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle>
+  @switch (data.dialogType) {
+    @case (NodeDialogType.CREATE_ROOT) {
+      Tvorba nového zdroja osobných údajov
+    }
+    @case (NodeDialogType.ADD_NODE) {
+      Pridanie novej relácie zdroja
+    }
+    @case (NodeDialogType.EDIT_NODE) {
+      Úprava
+    }
+    @case (NodeDialogType.PREVIEW) {
+      Prehľad
+    }
+  }
+</h1>
+
+<mat-dialog-content>
+  <form [formGroup]="formGroup" novalidate>
+
+    <mat-form-field class="form-field-full">
+      <mat-label>Názov</mat-label>
+      <input matInput formControlName="label">
+    </mat-form-field>
+
+    <ng-container class="dialog-section">
+      <h2>{{ 'Tabuľka' }}</h2>
+      <div class="tables-ng-select">
+        <div class="table-select">
+          <label for="schemaSelect">Schéma</label>
+          <ng-select [items]="schemas"
+                     [multiple]="false"
+                     [clearable]="true"
+                     id="schemaSelect"
+                     placeholder="Vyber schému"
+                     formControlName="schemaName">
+            <ng-template ng-typetosearch-tmp>
+              <div class="ng-option disabled">{{'začni písať'}}</div>
+            </ng-template>
+            <ng-template ng-notfound-tmp>
+              <div class="ng-option disabled">{{'nenájdené dáta'}}</div>
+            </ng-template>
+            <ng-template ng-loadingtext-tmp>
+              <div class="ng-option disabled">{{'načítavam'}}</div>
+            </ng-template>
+          </ng-select>
+        </div>
+
+        <div class="table-select">
+          <label for="tableSelect">Tabuľka</label>
+          <ng-select [items]="tablesForSchema"
+                     [multiple]="false"
+                     [clearable]="true"
+                     id="tableSelect"
+                     placeholder="Vyber tabuľku"
+                     formControlName="tableName">
+            <ng-template ng-typetosearch-tmp>
+              <div class="ng-option disabled">{{'začni písať'}}</div>
+            </ng-template>
+            <ng-template ng-notfound-tmp>
+              <div class="ng-option disabled">{{'nenájdené dáta'}}</div>
+            </ng-template>
+            <ng-template ng-loadingtext-tmp>
+              <div class="ng-option disabled">{{'načítavam'}}</div>
+            </ng-template>
+          </ng-select>
+        </div>
+      </div>
+
+      <div class="form-field-full" *ngIf="formGroup.get('tableName').value">
+        <label for="ident_col_select">Identifikačný stĺpec</label>
+        <ng-select [items]="columnsForTable"
+                   [multiple]="false"
+                   [clearable]="true"
+                   id="ident_col_select"
+                   placeholder="Vyber stĺpec"
+                   formControlName="identificationColumnName">
+          <ng-template ng-typetosearch-tmp>
+            <div class="ng-option disabled">{{'začni písať'}}</div>
+          </ng-template>
+          <ng-template ng-notfound-tmp>
+            <div class="ng-option disabled">{{'nenájdené dáta'}}</div>
+          </ng-template>
+          <ng-template ng-loadingtext-tmp>
+            <div class="ng-option disabled">{{'načítavam'}}</div>
+          </ng-template>
+        </ng-select>
+      </div>
+
+      @if (data.node.id > 0 && data.node.tableName == formGroup.get('tableName').value && data.node.schemaName == formGroup.get('schemaName').value) {
+        @if (dataTypes?.length > 0) {
+          <div class="gdpr-data-section">
+            <h2>Táto tabuľka obsahuje tieto osobné údaje: </h2>
+            @for (data of dataTypes; track data.id) {
+              <p><b>{{data.name}}: </b> {{getGdprDataLabel(data)}}</p>
+            }
+          </div>
+        } @else {
+          <div class="no-gdpr-data-section">
+            <p>Táto tabuľka neobsahuje žiadne osobné údaje</p>
+          </div>
+        }
+      }
+    </ng-container>
+
+    <!-- must have parent and filled table to show join conditions -->
+    @if (data.node.parentNode?.id > 0 && formGroup.get('tableName').value) {
+
+      <div class="joins-header">
+        <h2>{{ 'Prepojenia na otcovskú tabuľku [' + data.node.parentNode.schemaName + '].[' + data.node.parentNode.tableName + ']' }}</h2>
+
+        <div class="controls">
+          @if (joinConditionsFormArray.length > 1) {
+            <ng-select [items]="operators"
+                       [multiple]="false"
+                       [clearable]="false"
+                       placeholder="Operátor"
+                       class="select-operator"
+                       formControlName="conditionsOperator">
+              <ng-template ng-typetosearch-tmp>
+                <div class="ng-option disabled">{{'začni písať'}}</div>
+              </ng-template>
+              <ng-template ng-notfound-tmp>
+                <div class="ng-option disabled">{{'nenájdené dáta'}}</div>
+              </ng-template>
+              <ng-template ng-loadingtext-tmp>
+                <div class="ng-option disabled">{{'načítavam'}}</div>
+              </ng-template>
+            </ng-select>
+          }
+
+          <button *ngIf="data.dialogType !== NodeDialogType.PREVIEW" mat-icon-button color="primary" (click)="addJoinCondition()">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+      </div>
+
+
+      <ng-container *ngFor="let joinFormControl of joinConditionsFormArray.controls, let i = index">
+        <app-parent-node-join-condition
+          [formGroup]="toFg(joinFormControl)"
+          [nodeTable]="formGroup.get('tableName').value"
+          [nodeSchema]="formGroup.get('schemaName').value"
+          [parentSchema]="data.node.parentNode?.schemaName"
+          [parentTable]="data.node.parentNode?.tableName"
+          [deletable]="data.dialogType !== NodeDialogType.PREVIEW"
+          [index]="i"
+          (deleteClicked)="joinConditionRemoveClicked($event)">
+        </app-parent-node-join-condition>
+      </ng-container>
+    }
+
+  </form>
+</mat-dialog-content>
+
+
+@switch (data.dialogType) {
+  @case (NodeDialogType.CREATE_ROOT) {
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="onCancelClick()">Zrušit</button>
+      <button mat-button cdkFocusInitial (click)="onConfirmClick()">Vytvoriť zdroj</button>
+    </mat-dialog-actions>
+  }
+  @case (NodeDialogType.ADD_NODE) {
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="onCancelClick()">Zrušit</button>
+      <button mat-button cdkFocusInitial (click)="onConfirmClick()">Pridať uzol</button>
+    </mat-dialog-actions>
+  }
+  @case (NodeDialogType.EDIT_NODE) {
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="onCancelClick()">Zrušit</button>
+      <button mat-button cdkFocusInitial (click)="onConfirmClick()">Upraviť</button>
+    </mat-dialog-actions>
+  }
+  @case (NodeDialogType.PREVIEW) {
+    <mat-dialog-actions align="end">
+      <button mat-button cdkFocusInitial (click)="onConfirmClick()">Zavrieť</button>
+    </mat-dialog-actions>
+  }
+}

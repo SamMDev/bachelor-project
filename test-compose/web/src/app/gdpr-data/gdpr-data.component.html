@@ -1,0 +1,81 @@
+<!--<p>gdpr-data works!</p>-->
+
+
+<app-sidebar-window
+  [opened]="detail != null"
+  [loading]="loading$ | async"
+  [editMode]="editMode"
+  (editClicked)="editClicked()"
+  (deleteClicked)="deleteClicked()"
+  (closeClicked)="closeClicked()"
+  (cancelClicked)="cancelClicked()"
+  (saveClicked)="saveClicked()">
+
+  <ng-container detail-content>
+    <form [formGroup]="formGroup" novalidate>
+
+      <mat-form-field class="form-field-full">
+        <mat-label>Názov osobného údaju</mat-label>
+        <input matInput formControlName="name">
+      </mat-form-field>
+
+      <mat-form-field class="form-field-full">
+        <mat-label>Hodnota stĺpca po anonymizácii</mat-label>
+        <input matInput formControlName="defaultValue">
+      </mat-form-field>
+
+      <mat-list [ngClass]="(editMode) ? ' form-section-divider-edit' : 'form-section-divider'">
+        <mat-list-item>{{ 'Miesta výskytu v databáze' }}</mat-list-item>
+      </mat-list>
+
+      <div class="form-field-full">
+        <ng-select [items]="columns"
+                   [multiple]="true"
+                   [clearable]="true"
+                   [searchFn]="searchColumnMetadata"
+                   [trackByFn]="trackByFn"
+                   placeholder="Miesta výskytu v databáze"
+                   formControlName="columns">
+          <ng-template ng-label-tmp let-item="item">
+            {{ getColumnMetadataLabel(item) }}
+          </ng-template>
+          <ng-template ng-option-tmp let-item="item" let-search="searchTerm" let-index="index">
+            {{ getColumnMetadataLabel(item) }}
+          </ng-template>
+
+
+          <ng-template ng-typetosearch-tmp>
+            <div class="ng-option disabled">{{'začni písať'}}</div>
+          </ng-template>
+          <ng-template ng-notfound-tmp>
+            <div class="ng-option disabled">{{'nenájdené dáta'}}</div>
+          </ng-template>
+          <ng-template ng-loadingtext-tmp>
+            <div class="ng-option disabled">{{'načítavam'}}</div>
+          </ng-template>
+        </ng-select>
+      </div>
+
+    </form>
+  </ng-container>
+
+  <ng-container action-buttons>
+    <button mat-raised-button color="primary" (click)="addClicked()">Nový</button>
+  </ng-container>
+
+  <ng-container main-content>
+    <div style="height: 100%">
+      <ag-grid-angular
+        class="ag-theme-quartz"
+        style="height: 100%;"
+        rowSelection="single"
+        (gridReady)="gridReady($event)"
+        [rowData]="rowData"
+        (rowSelected)="onRowSelected($event)"
+        [defaultColDef]="defaultColDef"
+        [pagination]="true"
+        [columnDefs]="colDefs">
+      </ag-grid-angular>
+    </div>
+  </ng-container>
+</app-sidebar-window>

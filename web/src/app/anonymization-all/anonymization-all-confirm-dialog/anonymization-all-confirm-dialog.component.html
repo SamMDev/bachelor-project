@@ -1,0 +1,26 @@
+<div>
+  <h3 mat-dialog-title>Anonymizovať dáta?</h3>
+  <div mat-dialog-content>
+    <p>Vykoná sa táto operácia</p>
+    <ng-container *ngIf="sqlPreview && dataTypes">
+      <ng-container *ngFor="let key of Object.keys(sqlPreview)">
+        <p><b>{{getGdprDataById(key)?.name}}</b></p>
+        <ng-container *ngFor="let query of sqlPreview[key]">
+          <p>{{query}}</p>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </div>
+
+  <div mat-dialog-actions>
+    <div class="cancel-button-wrapper">
+      <button mat-raised-button class="cancel-button" (click)="onClick(null)" tabindex="1">
+        Zrušiť
+      </button>
+    </div>
+
+    <button mat-raised-button color="primary" (click)="onClick(true)" tabindex="2" [disabled]="!sqlPreview">
+      Anonymizuj
+    </button>
+  </div>
+</div>

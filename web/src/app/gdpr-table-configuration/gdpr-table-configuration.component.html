@@ -1,0 +1,84 @@
+
+<app-sidebar-window
+  [opened]="relationsTree != null"
+  [loading]="loading$ | async"
+  [editMode]="editMode"
+  (editClicked)="editClicked()"
+  (deleteClicked)="deleteClicked()"
+  (closeClicked)="closeClicked()"
+  (cancelClicked)="cancelClicked()"
+  (saveClicked)="saveClicked()">
+
+  <ng-container detail-content>
+
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree">
+      <mat-nested-tree-node *matTreeNodeDef="let node;">
+        <div class="mat-tree-node">
+          <button mat-icon-button matTreeNodeToggle [disabled]="!hasChild(node)">
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+          </button>
+
+          {{node.label}}
+
+          <button *ngIf="editMode" [matMenuTriggerFor]="nodeMenu" [matMenuTriggerData]="{node: node}" mat-mini-fab color="primary" class="add-node-button">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <button *ngIf="!editMode" mat-mini-fab color="primary" class="add-node-button" (click)="onPreviewNode(node)">
+            <mat-icon>search</mat-icon>
+          </button>
+
+        </div>
+        <div [class.example-tree-invisible]="!treeControl.isExpanded(node)" role="group">
+          <ng-container matTreeNodeOutlet></ng-container>
+        </div>
+      </mat-nested-tree-node>
+    </mat-tree>
+
+
+  </ng-container>
+
+  <ng-container action-buttons>
+    <button mat-raised-button color="primary" (click)="addClicked()">Nový</button>
+  </ng-container>
+
+  <ng-container main-content>
+    <div style="height: 100%">
+      <ag-grid-angular
+        class="ag-theme-quartz"
+        style="height: 100%;"
+        rowSelection="single"
+        (gridReady)="gridReady($event)"
+        [rowData]="rowData"
+        (rowSelected)="onRowSelected($event)"
+        [defaultColDef]="defaultColDef"
+        [pagination]="true"
+        [columnDefs]="colDefs">
+      </ag-grid-angular>
+    </div>
+  </ng-container>
+
+</app-sidebar-window>
+
+
+<mat-menu #nodeMenu="matMenu">
+  <ng-template matMenuContent let-node="node">
+
+    <button mat-menu-item (click)="onAddNode(node)">
+      <mat-icon>add</mat-icon>
+      <span>Pridať</span>
+    </button>
+
+    <button mat-menu-item (click)="onEditNode(node)">
+      <mat-icon>edit</mat-icon>
+      <span>Upraviť</span>
+    </button>
+
+    <button mat-menu-item (click)="onDeleteNode(node)" *ngIf="relationsTree?.id > 0 && node.parentNode?.id > 0">
+      <mat-icon>delete</mat-icon>
+      <span>Odstrániť</span>
+    </button>
+
+  </ng-template>
+</mat-menu>

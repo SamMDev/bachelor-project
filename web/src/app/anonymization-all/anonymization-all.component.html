@@ -1,0 +1,39 @@
+
+<form *ngIf="formGroup && dataTypes" [formGroup]="formGroup">
+  <div class="action-buttons">
+    <button
+      mat-button
+      color="primary"
+      (click)="anonymizeAll()"
+      [disabled]="!formGroup.get('gdprDataIds').value || formGroup.get('gdprDataIds').value.length == 0"
+      matTooltip="Expanduj strom">
+      Anonymizuj
+      <mat-icon>delete_sweep</mat-icon>
+    </button>
+  </div>
+
+  <mat-list class="form-section-divider">
+    <mat-list-item>Výber osobných údajov pre plošnú anonymizáciu</mat-list-item>
+  </mat-list>
+
+  <ng-select [items]="dataTypes"
+             [multiple]="true"
+             [clearable]="true"
+             bindValue="id"
+             bindLabel="name"
+             placeholder="Vyberte typy osobných údajov"
+             formControlName="gdprDataIds">
+    <ng-template ng-typetosearch-tmp>
+      <div class="ng-option disabled">{{'začni písať'}}</div>
+    </ng-template>
+    <ng-template ng-notfound-tmp>
+      <div class="ng-option disabled">{{'nenájdené dáta'}}</div>
+    </ng-template>
+    <ng-template ng-loadingtext-tmp>
+      <div class="ng-option disabled">{{'načítavam'}}</div>
+    </ng-template>
+  </ng-select>
+
+  <mat-spinner *ngIf="loading" diameter="50" class="spinner-overlay"></mat-spinner>
+
+</form>

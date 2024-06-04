@@ -1,0 +1,59 @@
+
+<app-sidebar-window
+  [opened]="detail != null"
+  [editMode]="false"
+  [editable]="false"
+  [deletable]="false"
+  (closeClicked)="closeClicked()">
+
+  <ng-container detail-content>
+    <form [formGroup]="formGroup" novalidate>
+
+      <mat-form-field class="form-field-full">
+        <mat-label>Správa</mat-label>
+        <textarea matInput formControlName="message"></textarea>
+      </mat-form-field>
+
+      <mat-form-field class="form-field-full">
+        <mat-label>Vytvorené</mat-label>
+        <input matInput formControlName="created" [matDatepicker]="picker">
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      @if (detail?.childAudits?.length > 0) {
+        <mat-list class="form-section-divider">
+          <mat-list-item>Dcérske udalosti</mat-list-item>
+        </mat-list>
+        <div>
+          <ag-grid-angular
+            class="ag-theme-quartz"
+            rowSelection="single"
+            domLayout="autoHeight"
+            (gridReady)="detailGridReady($event)"
+            [rowData]="detail?.childAudits"
+            [defaultColDef]="defaultColDef"
+            [columnDefs]="detailGridColDefs">
+          </ag-grid-angular>
+        </div>
+      }
+    </form>
+  </ng-container>
+
+  <ng-container main-content>
+    <div style="height: 100%">
+      <ag-grid-angular
+        class="ag-theme-quartz"
+        style="height: 100%;"
+        rowSelection="single"
+        (gridReady)="gridReady($event)"
+        [rowData]="rowData"
+        [rowHeight]="80"
+        (rowSelected)="onRowSelected($event)"
+        [defaultColDef]="defaultColDef"
+        [pagination]="true"
+        [columnDefs]="mainGridColDefs">
+      </ag-grid-angular>
+    </div>
+  </ng-container>
+</app-sidebar-window>

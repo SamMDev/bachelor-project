@@ -1,0 +1,46 @@
+version: '3.1'
+
+services:
+  postgres-server:
+    container_name: postgres_server
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=helloworld
+      - POSTGRES_USER=root
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./sql-scripts/postgres:/docker-entrypoint-initdb.d
+
+
+  my-sql-server:
+    container_name: my_sql_server
+    image: mysql 
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: helloworld
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./sql-scripts/mysql:/docker-entrypoint-initdb.d  
+
+  ms-sql-server:
+    container_name: ms_sql_server
+    image: mcr.microsoft.com/azure-sql-edge
+    restart: always
+    ports:
+      - 1433:1433
+    environment:
+      - SA_PASSWORD=123helloworld...
+      - ACCEPT_EULA=Y
+    volumes:
+      - ms-sql-data:/var/opt/mssql  
+
+volumes:
+  ms-sql-data: {}
+  postgres-data: {}
+  mysql-data: {}

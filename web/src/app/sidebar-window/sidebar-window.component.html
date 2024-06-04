@@ -1,0 +1,42 @@
+<mat-drawer-container autosize>
+  <mat-drawer mode="over" position="end" autoFocus="false" disableClose="true">
+    <mat-spinner *ngIf="loading" diameter="50" class="spinner-overlay"></mat-spinner>
+
+    <div class="sidebar-actions" [ngClass]="'sidebar-actions' + (editMode ? ' sidebar-actions-edit' : '')">
+      <!-- non-edit mode actions-->
+      <ng-container *ngIf="!editMode">
+        <button *ngIf="editable" mat-icon-button (click)="editClicked.emit()">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button *ngIf="deletable" mat-icon-button (click)="deleteClicked.emit()">
+          <mat-icon>delete</mat-icon>
+        </button>
+        <button mat-icon-button (click)="closeClicked.emit()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </ng-container>
+
+      <!-- edit mode actions-->
+      <ng-container *ngIf="editMode">
+        <button mat-icon-button (click)="saveClicked.emit()">
+          <mat-icon>check</mat-icon>
+        </button>
+        <button mat-icon-button (click)="cancelClicked.emit()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </ng-container>
+
+    </div>
+
+    <ng-content select="[detail-content]" class="detail-content"></ng-content>
+  </mat-drawer>
+
+  <mat-drawer-content>
+    <div class="action-buttons">
+      <ng-content select="[action-buttons]"></ng-content>
+    </div>
+
+    <ng-content select="[main-content]"></ng-content>
+  </mat-drawer-content>
+
+</mat-drawer-container>
